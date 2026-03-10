@@ -13,13 +13,13 @@ https://github.com/Karumudi-Karthika/chronic-disease-management
  
 - Create, update, and delete patient records   
 - Form validation for: 
-  Australian phone numbers   
-  Email validation (`@gmail.com`)   
-  Date of birth format (`YYYY-MM-DD`) 
+  * Australian phone numbers   
+  * Email validation (`@gmail.com`)   
+  * Date of birth format (`YYYY-MM-DD`) 
  
 - Patient metrics dashboard displaying: 
-  Total patients 
-  Average patient age 
+  * Total patients 
+  * Average patient age 
  
 - Sequential patient numbering automatically updated after deletions 
  
@@ -28,8 +28,8 @@ https://github.com/Karumudi-Karthika/chronic-disease-management
 - UI notifications for successful updates and deletions 
  
 - Responsive interface with navigation tabs: 
-   Patient List 
-   Add Patient 
+  * Patient List
+  * Add Patient 
  
 --- 
  
@@ -49,21 +49,20 @@ https://github.com/Karumudi-Karthika/chronic-disease-management
 --- 
  
 # Project Structure 
- 
 
-chronic-disease-management 
-│ 
-├── backend 
-│ ├── Controllers 
-│ ├── Models 
-│ ├── Data 
-│ └── Program.cs 
-│ 
-├── frontend 
-│ ├── components 
-│ ├── pages 
-│ ├── services 
-│ └── App.js 
+chronic-disease-management
+│
+├── backend
+│ ├── Controllers
+│ ├── Models
+│ ├── Data
+│ └── Program.cs
+│
+├── frontend
+│ ├── components
+│ ├── pages
+│ ├── services
+│ └── App.js
 
 --- 
  
