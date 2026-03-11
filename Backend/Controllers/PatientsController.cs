@@ -54,6 +54,7 @@ namespace Backend.Controllers
             existing.Email = patient.Email;
             existing.Phone = patient.Phone;
             existing.DateOfBirth = patient.DateOfBirth;
+            existing.Disease = patient.Disease;
 
             await _context.SaveChangesAsync();
             return NoContent();
