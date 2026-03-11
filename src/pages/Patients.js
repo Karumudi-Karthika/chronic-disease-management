@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import { getPatients, deletePatient, getVitals, addVital } from "../services/api";
 import ConfirmationDialog from "../components/ConfirmationDialog";
+import AddOrEditPatient from "./AddOrEditPatient";
 
 // Risk calculation based on vitals
 function getRisk(vitals) {
@@ -44,8 +45,8 @@ function VitalsModal({ patient, onClose, showNotification }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const errs = validate();
-    if (Object.keys(errs).length) { setErrors(errs); return; }
+    const e2 = validate();
+    if (Object.keys(e2).length) { setErrors(e2); return; }
     try {
       await addVital({
         patientId: patient.id,
@@ -98,7 +99,7 @@ function VitalsModal({ patient, onClose, showNotification }) {
                   type="number" step="any"
                   value={form[key]}
                   onChange={(e) => setForm({ ...form, [key]: e.target.value })}
-                  style={modalInputStyle}
+                  style={inputStyle}
                 />
                 {errors[key] && <span style={errorStyle}>{errors[key]}</span>}
               </div>
@@ -108,7 +109,7 @@ function VitalsModal({ patient, onClose, showNotification }) {
             <label style={{ fontSize: "13px", fontWeight: "500" }}>Date</label>
             <input type="date" value={form.recordedAt}
               onChange={(e) => setForm({ ...form, recordedAt: e.target.value })}
-              style={{ ...modalInputStyle, width: "200px" }} />
+              style={{ ...inputStyle, width: "200px" }} />
           </div>
           <button type="submit" style={{ ...saveBtnStyle, marginTop: "12px" }}>Save Vitals</button>
         </form>
@@ -126,7 +127,6 @@ function VitalsModal({ patient, onClose, showNotification }) {
                   <th style={thStyle}>Temp (°C)</th>
                   <th style={thStyle}>Heart Rate</th>
                   <th style={thStyle}>BP (S/D)</th>
-                  <th style={thStyle}>Risk</th>
                 </tr>
               </thead>
               <tbody>
@@ -137,10 +137,10 @@ function VitalsModal({ patient, onClose, showNotification }) {
                       <td style={tdStyle}>{new Date(v.recordedAt).toLocaleDateString()}</td>
                       <td style={tdStyle}>{v.temperature}</td>
                       <td style={tdStyle}>{v.heartRate} bpm</td>
-                      <td style={tdStyle}>{v.bloodPressureSystolic}/{v.bloodPressureDiastolic}</td>
                       <td style={tdStyle}>
+                        {v.bloodPressureSystolic}/{v.bloodPressureDiastolic}
                         {vRisk && (
-                          <span style={{ fontSize: "12px", padding: "2px 8px", borderRadius: "10px", backgroundColor: vRisk.bg, color: vRisk.color, fontWeight: "bold" }}>
+                          <span style={{ marginLeft: "8px", fontSize: "11px", padding: "2px 6px", borderRadius: "10px", backgroundColor: vRisk.bg, color: vRisk.color }}>
                             {vRisk.label}
                           </span>
                         )}
@@ -157,11 +157,12 @@ function VitalsModal({ patient, onClose, showNotification }) {
   );
 }
 
-function Patients({ showNotification, onEdit }) {
+function Patients({ showNotification }) {
   const [patients, setPatients] = useState([]);
   const [loading, setLoading] = useState(true);
   const [deletingId, setDeletingId] = useState(null);
   const [dialog, setDialog] = useState({ show: false, patientId: null });
+  const [editingPatient, setEditingPatient] = useState(null);
   const [vitalsPatient, setVitalsPatient] = useState(null);
   const [patientVitals, setPatientVitals] = useState({});
 
@@ -170,13 +171,15 @@ function Patients({ showNotification, onEdit }) {
     try {
       const data = await getPatients();
       setPatients(data);
+      // Load vitals for all patients to show risk
       const vitalsMap = {};
       await Promise.all(data.map(async (p) => {
-        try { vitalsMap[p.id] = await getVitals(p.id); }
-        catch { vitalsMap[p.id] = []; }
+        try {
+          vitalsMap[p.id] = await getVitals(p.id);
+        } catch { vitalsMap[p.id] = []; }
       }));
       setPatientVitals(vitalsMap);
-    } catch {
+    } catch (err) {
       showNotification("Failed to fetch patients", "error");
     }
     setLoading(false);
@@ -201,6 +204,12 @@ function Patients({ showNotification, onEdit }) {
     setDeletingId(null);
   };
 
+  const handleAddOrEdit = () => {
+    setEditingPatient(null);
+    fetchPatients();
+    showNotification(editingPatient ? "Patient updated!" : "Patient added!");
+  };
+
   const formatDOB = (dob) => {
     if (!dob) return "";
     const date = new Date(dob);
@@ -220,6 +229,7 @@ function Patients({ showNotification, onEdit }) {
     return Math.round(totalAge / patients.length);
   };
 
+  // Disease breakdown count
   const diseaseCounts = patients.reduce((acc, p) => {
     const d = p.disease || "Unknown";
     acc[d] = (acc[d] || 0) + 1;
@@ -230,6 +240,8 @@ function Patients({ showNotification, onEdit }) {
     <div style={containerStyle}>
       {loading ? <p style={{ textAlign: "center" }}>Loading patients...</p> : (
         <>
+          <AddOrEditPatient onAddOrEdit={handleAddOrEdit} editingPatient={editingPatient} />
+
           {/* Metrics */}
           <div style={metricsStyle}>
             <span>Patients: <strong>{patients.length}</strong></span>
@@ -283,7 +295,7 @@ function Patients({ showNotification, onEdit }) {
                         ) : <span style={{ color: "#aaa", fontSize: "13px" }}>No vitals</span>}
                       </td>
                       <td style={tdStyle}>
-                        <button style={editBtnStyle} onClick={() => onEdit(p)}>Edit</button>
+                        <button style={editBtnStyle} onClick={() => setEditingPatient(p)}>Edit</button>
                         <button style={vitalsBtnStyle} onClick={() => setVitalsPatient(p)}>Vitals</button>
                         <button style={deleteBtnStyle} onClick={() => handleDeleteClick(p.id)} disabled={deletingId === p.id}>
                           {deletingId === p.id ? "..." : "Delete"}
@@ -319,7 +331,7 @@ function Patients({ showNotification, onEdit }) {
 
 // Styles
 const containerStyle = { width: "100%", overflowX: "auto" };
-const metricsStyle = { display: "flex", alignItems: "center", flexWrap: "wrap", padding: "12px 16px", backgroundColor: "#f0f8ff", borderRadius: "8px", margin: "0 0 15px 0", fontSize: "15px", border: "1px solid #bbdefb" };
+const metricsStyle = { display: "flex", alignItems: "center", flexWrap: "wrap", padding: "12px 16px", backgroundColor: "#f0f8ff", borderRadius: "8px", margin: "15px 0", fontSize: "15px", border: "1px solid #bbdefb" };
 const tableWrapperStyle = { overflowX: "auto", maxHeight: "500px", border: "1px solid #ccc", borderRadius: "5px" };
 const tableStyle = { width: "100%", borderCollapse: "collapse", minWidth: "1000px", fontSize: "15px" };
 const theadStyle = { backgroundColor: "#1976d2", color: "white", fontWeight: "bold", textAlign: "left", height: "50px", position: "sticky", top: 0 };
@@ -333,7 +345,7 @@ const deleteBtnStyle = { padding: "6px 10px", backgroundColor: "#d32f2f", color:
 const overlayStyle = { position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 };
 const modalStyle = { backgroundColor: "#fff", padding: "25px", borderRadius: "10px", width: "700px", maxWidth: "95vw", maxHeight: "85vh", overflowY: "auto", boxShadow: "0 4px 20px rgba(0,0,0,0.3)" };
 const closeBtnStyle = { background: "none", border: "none", fontSize: "20px", cursor: "pointer", color: "#555" };
-const modalInputStyle = { width: "100%", padding: "7px", borderRadius: "4px", border: "1px solid #ccc", marginTop: "3px" };
+const inputStyle = { width: "100%", padding: "7px", borderRadius: "4px", border: "1px solid #ccc", marginTop: "3px" };
 const saveBtnStyle = { padding: "8px 16px", backgroundColor: "#7b1fa2", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" };
 const errorStyle = { color: "red", fontSize: "12px" };
 
