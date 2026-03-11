@@ -9,10 +9,10 @@ function AddOrEditPatient({ onAddOrEdit, editingPatient }) {
     email: "",
     phone: "",
     dateOfBirth: "",
+    disease: "",
   });
   const [errors, setErrors] = useState({});
 
-  // Populate form if editing
   useEffect(() => {
     if (editingPatient) {
       let dob = "";
@@ -23,7 +23,7 @@ function AddOrEditPatient({ onAddOrEdit, editingPatient }) {
         const dd = dateObj.getDate().toString().padStart(2, "0");
         dob = `${yyyy}-${mm}-${dd}`;
       }
-      setPatient({ ...editingPatient, dateOfBirth: dob });
+      setPatient({ ...editingPatient, dateOfBirth: dob, disease: editingPatient.disease || "" });
     }
   }, [editingPatient]);
 
@@ -31,6 +31,7 @@ function AddOrEditPatient({ onAddOrEdit, editingPatient }) {
     let msg = "";
     if (name === "fullName" && !value.trim()) msg = "Name is required";
     if (name === "gender" && !value) msg = "Gender is required";
+    if (name === "disease" && !value) msg = "Disease is required";
     if (name === "phone" && !/^04\d{8}$/.test(value)) msg = "Phone should be in Australian format.";
     if (name === "email" && !/^[^\s@]+@gmail\.com$/.test(value)) msg = "Use a valid email address.";
     if (name === "dateOfBirth") {
@@ -41,10 +42,8 @@ function AddOrEditPatient({ onAddOrEdit, editingPatient }) {
         if (
           y < 1900 ||
           y > new Date().getFullYear() ||
-          m < 1 ||
-          m > 12 ||
-          d < 1 ||
-          d > 31 ||
+          m < 1 || m > 12 ||
+          d < 1 || d > 31 ||
           dateObj.getFullYear() !== y ||
           dateObj.getMonth() + 1 !== m ||
           dateObj.getDate() !== d
@@ -56,7 +55,7 @@ function AddOrEditPatient({ onAddOrEdit, editingPatient }) {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "phone" && /\D/.test(value)) return; // only numbers
+    if (name === "phone" && /\D/.test(value)) return;
     setPatient({ ...patient, [name]: value });
     validateField(name, value);
   };
@@ -70,30 +69,46 @@ function AddOrEditPatient({ onAddOrEdit, editingPatient }) {
       if (editingPatient) await updatePatient(editingPatient.id, patient);
       else await addPatient(patient);
 
-      setPatient({ fullName: "", gender: "", email: "", phone: "", dateOfBirth: "" });
-      onAddOrEdit(); // refresh table & show message
+      setPatient({ fullName: "", gender: "", email: "", phone: "", dateOfBirth: "", disease: "" });
+      onAddOrEdit();
     } catch (err) {
       console.error("Failed to save patient:", err);
       alert("Failed to save patient");
     }
   };
 
+  const fields = ["fullName", "gender", "email", "phone", "dateOfBirth", "disease"];
+
+  const dropdownFields = {
+    gender: ["Male", "Female", "Other"],
+    disease: ["Diabetes", "Hypertension", "Asthma", "Heart Disease", "Arthritis", "Other"],
+  };
+
+  const labelMap = {
+    fullName: "Name",
+    gender: "Gender",
+    email: "Email",
+    phone: "Phone",
+    dateOfBirth: "Date of Birth",
+    disease: "Chronic Disease",
+  };
+
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: "400px", marginTop: "20px" }}>
       <h2>{editingPatient ? "Edit Patient" : "Add Patient"}</h2>
 
-      {["fullName", "gender", "email", "phone", "dateOfBirth"].map((field) => (
+      {fields.map((field) => (
         <div style={{ marginBottom: "15px" }} key={field}>
-          <label>
-            {field === "fullName" ? "Name" : field.charAt(0).toUpperCase() + field.slice(1)}:
+          <label style={{ display: "block", marginBottom: "4px", fontWeight: "500" }}>
+            {labelMap[field]}:
           </label>
 
-          {field === "gender" ? (
+          {dropdownFields[field] ? (
             <select name={field} value={patient[field]} onChange={handleChange} style={inputStyle}>
               <option value="">Select</option>
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-              <option value="Other">Other</option>
+              {dropdownFields[field].map((opt) => (
+                <option key={opt} value={opt}>{opt}</option>
+              ))}
             </select>
           ) : (
             <input
