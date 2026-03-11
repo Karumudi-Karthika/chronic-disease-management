@@ -2,9 +2,20 @@
 
 A **full-stack healthcare management application** built with **React and ASP.NET Core Web API** that enables healthcare providers to manage patient records, monitor vitals, and assess health risks.
 
-This project demonstrates modern **full-stack development practices** including REST API design, frontend–backend integration, and database management using Entity Framework Core.
-
 🔗 Repository: https://github.com/Karumudi-Karthika/chronic-disease-management
+
+---
+
+## Screenshots
+
+### Patients Table
+![Patients Table](screenshots/patients-table.png)
+
+### Add Patient
+![Add Patient](screenshots/add-patient.png)
+
+### Vitals & Risk Indicator
+![Vitals](screenshots/vitals.png)
 
 ---
 
@@ -15,13 +26,9 @@ This project demonstrates modern **full-stack development practices** including 
 - ✅ Record and monitor patient vitals (temperature, heart rate, blood pressure)
 - ✅ Automatic **risk assessment** — Low / Medium / High based on vitals
 - ✅ Patient metrics dashboard (total patients, average age, disease breakdown)
-- ✅ Form validation:
-  - Australian phone number format
-  - Gmail address validation
-  - Date of birth validation
+- ✅ Form validation (Australian phone, Gmail, date of birth)
 - ✅ Confirmation dialog before deleting
 - ✅ Success/error notifications
-- ✅ Scrollable responsive patient table
 - ✅ Tab navigation (Patients / Add Patient / Edit Patient)
 
 ---
@@ -29,9 +36,7 @@ This project demonstrates modern **full-stack development practices** including 
 ## Tech Stack
 
 ### Frontend
-- React
-- Axios
-- JavaScript / HTML / CSS
+- React, Axios, JavaScript / HTML / CSS
 
 ### Backend
 - ASP.NET Core Web API (.NET 10)
@@ -44,7 +49,6 @@ This project demonstrates modern **full-stack development practices** including 
 
 ```
 chronic-disease-management/
-│
 ├── Backend/
 │   ├── Controllers/
 │   │   ├── PatientsController.cs
@@ -57,7 +61,6 @@ chronic-disease-management/
 │   ├── Program.cs
 │   ├── appsettings.json
 │   └── Backend.csproj
-│
 ├── src/
 │   ├── components/
 │   │   ├── ConfirmationDialog.js
@@ -68,7 +71,7 @@ chronic-disease-management/
 │   ├── services/
 │   │   └── api.js
 │   └── App.js
-│
+├── screenshots/
 ├── public/
 ├── package.json
 └── README.md
@@ -97,7 +100,7 @@ chronic-disease-management/
 
 ---
 
-## Running the Project Locally
+## Running Locally
 
 ### Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
@@ -115,7 +118,7 @@ cd Backend
 dotnet restore
 ASPNETCORE_ENVIRONMENT=Development dotnet run
 ```
-Backend runs on: **http://localhost:5000**  
+Backend: **http://localhost:5000**  
 Swagger UI: **http://localhost:5000/swagger**
 
 ### 3. Run the Frontend
@@ -124,16 +127,14 @@ cd ..
 npm install
 npm start
 ```
-Frontend runs on: **http://localhost:3000**
+Frontend: **http://localhost:3000**
 
 ---
 
 ## Risk Assessment Logic
 
-Risk is calculated automatically based on the latest vitals recorded:
-
 | Condition | Risk Level |
 |-----------|------------|
-| BP Systolic > 140 OR Heart Rate abnormal AND Temperature abnormal | 🔴 High Risk |
-| BP Systolic > 120 OR any one abnormal reading | 🟡 Medium Risk |
+| BP Systolic > 140 OR multiple abnormal readings | 🔴 High Risk |
+| BP Systolic > 120 OR one abnormal reading | 🟡 Medium Risk |
 | All readings within normal range | 🟢 Low Risk |
