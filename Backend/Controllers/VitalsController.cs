@@ -16,11 +16,14 @@ namespace Backend.Controllers
             _context = context;
         }
 
-        // GET: api/vitals
+        // GET: api/vitals?patientId=1
         [HttpGet]
-        public async Task<IActionResult> GetVitals()
+        public async Task<IActionResult> GetVitals([FromQuery] int? patientId)
         {
-            var vitals = await _context.Vitals.ToListAsync();
+            var query = _context.Vitals.AsQueryable();
+            if (patientId.HasValue)
+                query = query.Where(v => v.PatientId == patientId.Value);
+            var vitals = await query.OrderBy(v => v.RecordedAt).ToListAsync();
             return Ok(vitals);
         }
 
