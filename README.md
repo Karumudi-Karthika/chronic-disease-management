@@ -1,79 +1,63 @@
 # Chronic Disease Management System
 
-A **full-stack healthcare management application** built with **React and ASP.NET Core Web API** that enables healthcare providers to manage patient records, monitor vitals, and assess health risks.
+A **full-stack healthcare management application** built with **React and ASP.NET Core Web API**, enabling healthcare providers to manage patient records, monitor health metrics, and receive real-time UI notifications.
 
-🔗 Repository: https://github.com/Karumudi-Karthika/chronic-disease-management
+This project demonstrates end-to-end full-stack development including REST API design, frontend–backend integration, form validation, and relational database management using Entity Framework Core.
 
----
-
-## Screenshots
-
-### Patients Table
-![Patients Table](screenshots/patients-table.png)
-
-### Add Patient
-![Add Patient](screenshots/add-patient.png)
-
-### Vitals & Risk Indicator
-![Vitals](screenshots/vitals.png)
+🔗 **Live Repo:** https://github.com/Karumudi-Karthika/chronic-disease-management
 
 ---
 
 ## Features
 
-- ✅ Add, edit, and delete patient records
-- ✅ Track chronic disease per patient (Diabetes, Hypertension, Asthma, etc.)
-- ✅ Record and monitor patient vitals (temperature, heart rate, blood pressure)
-- ✅ Automatic **risk assessment** — Low / Medium / High based on vitals
-- ✅ Patient metrics dashboard (total patients, average age, disease breakdown)
-- ✅ Form validation (Australian phone, Gmail, date of birth)
-- ✅ Confirmation dialog before deleting
-- ✅ Success/error notifications
-- ✅ Tab navigation (Patients / Add Patient / Edit Patient)
+- **Patient Record Management** — Create, update, and delete patient records with sequential auto-numbering
+- **Form Validation** — Australian phone number format, email validation, and date of birth (YYYY-MM-DD)
+- **Analytics Dashboard** — Real-time metrics including total patient count and average patient age
+- **Responsive UI** — Scrollable patient table with navigation tabs (Patient List / Add Patient)
+- **Notifications** — In-app success/error notifications for all CRUD operations
+- **REST API** — Clean RESTful endpoints with full CRUD support via ASP.NET Core Web API
 
 ---
 
 ## Tech Stack
 
 ### Frontend
-- React, Axios, JavaScript / HTML / CSS
+| Technology | Purpose |
+|------------|---------|
+| React | UI framework |
+| Axios | HTTP client for API integration |
+| React Router | Client-side navigation |
+| JavaScript (ES6+) | Application logic |
+| HTML5 / CSS3 | Markup and responsive styling |
 
 ### Backend
-- ASP.NET Core Web API (.NET 10)
-- Entity Framework Core
-- SQLite
+| Technology | Purpose |
+|------------|---------|
+| ASP.NET Core Web API (.NET 10) | REST API framework |
+| Entity Framework Core | ORM and database management |
+| SQLite | Relational data persistence |
+| C# | Server-side logic |
 
 ---
 
-## Project Structure
+## Architecture
 
 ```
 chronic-disease-management/
-├── Backend/
-│   ├── Controllers/
-│   │   ├── PatientsController.cs
-│   │   └── VitalsController.cs
-│   ├── Data/
-│   │   └── ChronicDbContext.cs
-│   ├── Models/
-│   │   ├── Patient.cs
-│   │   └── Vital.cs
-│   ├── Program.cs
-│   ├── appsettings.json
-│   └── Backend.csproj
-├── src/
-│   ├── components/
-│   │   ├── ConfirmationDialog.js
-│   │   └── Notification.js
-│   ├── pages/
-│   │   ├── Patients.js
-│   │   └── AddOrEditPatient.js
-│   ├── services/
-│   │   └── api.js
-│   └── App.js
-├── screenshots/
-├── public/
-├── package.json
+│
+├── ChronicDiseaseApp1/          # ASP.NET Core Web API (Backend)
+│   ├── Controllers/             # API endpoint controllers
+│   ├── Models/                  # Data models
+│   ├── Data/                    # EF Core DbContext
+│   └── Program.cs               # App entry point and middleware config
+│
+├── src/                         # React Frontend
+│   ├── components/              # Reusable UI components
+│   ├── pages/                   # Page-level components
+│   ├── services/                # Axios API service layer
+│   └── App.js                   # Root component and routing
+│
+├── public/                      # Static assets
 └── README.md
 ```
 
@@ -81,30 +65,22 @@ chronic-disease-management/
 
 ## API Endpoints
 
-### Patients
 | Method | Endpoint | Description |
 |--------|----------|-------------|
-| GET | /api/patients | Get all patients |
-| GET | /api/patients/{id} | Get patient by ID |
-| POST | /api/patients | Add new patient |
-| PUT | /api/patients/{id} | Update patient |
-| DELETE | /api/patients/{id} | Delete patient |
-
-### Vitals
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | /api/vitals?patientId={id} | Get vitals for a patient |
-| POST | /api/vitals | Add new vitals |
-| PUT | /api/vitals/{id} | Update vitals |
-| DELETE | /api/vitals/{id} | Delete vitals |
+| GET | `/api/patients` | Retrieve all patient records |
+| GET | `/api/patients/{id}` | Retrieve a specific patient |
+| POST | `/api/patients` | Create a new patient record |
+| PUT | `/api/patients/{id}` | Update an existing patient |
+| DELETE | `/api/patients/{id}` | Delete a patient record |
 
 ---
 
-## Running Locally
+## Getting Started
 
 ### Prerequisites
 - [.NET 10 SDK](https://dotnet.microsoft.com/download)
-- [Node.js](https://nodejs.org/)
+- [Node.js](https://nodejs.org/) (v18+)
+- [Git](https://git-scm.com/)
 
 ### 1. Clone the Repository
 ```bash
@@ -114,12 +90,11 @@ cd chronic-disease-management
 
 ### 2. Run the Backend
 ```bash
-cd Backend
+cd ChronicDiseaseApp1
 dotnet restore
-ASPNETCORE_ENVIRONMENT=Development dotnet run
+dotnet run
 ```
-Backend: **http://localhost:5000**  
-Swagger UI: **http://localhost:5000/swagger**
+Backend API runs on: **http://localhost:5000**
 
 ### 3. Run the Frontend
 ```bash
@@ -127,14 +102,35 @@ cd ..
 npm install
 npm start
 ```
-Frontend: **http://localhost:3000**
+Frontend runs on: **http://localhost:3000**
 
 ---
 
-## Risk Assessment Logic
+## Key Implementation Details
 
-| Condition | Risk Level |
-|-----------|------------|
-| BP Systolic > 140 OR multiple abnormal readings | 🔴 High Risk |
-| BP Systolic > 120 OR one abnormal reading | 🟡 Medium Risk |
-| All readings within normal range | 🟢 Low Risk |
+- **REST API design** — Clean separation of concerns with Controllers, Models, and Data layers
+- **Entity Framework Core** — Code-first database approach with migrations for schema management
+- **Frontend–backend integration** — Axios service layer abstracts all API calls from UI components
+- **Form validation** — Client-side validation for Australian phone formats, email, and date fields
+- **Responsive design** — Mobile-friendly layout with CSS-based responsive components
+
+---
+
+## What I'd Improve With More Time
+
+- Migrate from SQLite to PostgreSQL for production-grade data persistence
+- Add TypeScript to the React frontend for stronger type safety
+- Implement unit tests (xUnit for backend, Jest/React Testing Library for frontend)
+- Add a GitHub Actions CI/CD pipeline for automated build and test on push
+- Add authentication using JWT tokens
+- Deploy frontend to Vercel and backend to Azure App Service
+
+---
+
+## About the Developer
+
+**Karumudi Karthika** — Full Stack Developer with 3 years of enterprise experience building fintech platforms at Fiserv.
+
+- 🔗 [LinkedIn](https://linkedin.com/in/karumudi-karthika)
+- 💻 [GitHub](https://github.com/Karumudi-Karthika)
+- 📧 karthika.karumudi11@gmail.com
