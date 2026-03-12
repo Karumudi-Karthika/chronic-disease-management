@@ -1,6 +1,6 @@
 # Chronic Disease Management System
 
-A **full-stack healthcare management application** built with **React and ASP.NET Core Web API**, enabling healthcare providers to manage patient records, monitor health metrics, and receive real-time UI notifications.
+A **full-stack healthcare management application** built with **React and ASP.NET Core Web API**, enabling healthcare providers to manage patient records, monitor vitals, and assess health risks in real time.
 
 This project demonstrates end-to-end full-stack development including REST API design, frontend–backend integration, form validation, and relational database management using Entity Framework Core.
 
@@ -8,12 +8,27 @@ This project demonstrates end-to-end full-stack development including REST API d
 
 ---
 
+## Screenshots
+
+### Patients Dashboard
+![Patients Table](screenshots/patients-table.png)
+
+### Add Patient
+![Add Patient](screenshots/add-patient.png)
+
+### Vitals & Risk Indicator
+![Vitals](screenshots/vitals.png)
+
+---
+
 ## Features
 
 - **Patient Record Management** — Create, update, and delete patient records with sequential auto-numbering
-- **Form Validation** — Australian phone number format, email validation, and date of birth (YYYY-MM-DD)
-- **Analytics Dashboard** — Real-time metrics including total patient count and average patient age
-- **Responsive UI** — Scrollable patient table with navigation tabs (Patient List / Add Patient)
+- **Chronic Disease Tracking** — Assign diseases (Diabetes, Hypertension, Asthma, Heart Disease, etc.) to each patient
+- **Vitals Monitoring** — Record temperature, heart rate, and blood pressure per patient
+- **Risk Assessment** — Automatic 🟢 Low / 🟡 Medium / 🔴 High risk classification based on vitals
+- **Analytics Dashboard** — Real-time metrics including total patient count, average age, and disease breakdown
+- **Form Validation** — Australian phone number format, Gmail validation, and date of birth (YYYY-MM-DD)
 - **Notifications** — In-app success/error notifications for all CRUD operations
 - **REST API** — Clean RESTful endpoints with full CRUD support via ASP.NET Core Web API
 
@@ -26,7 +41,6 @@ This project demonstrates end-to-end full-stack development including REST API d
 |------------|---------|
 | React | UI framework |
 | Axios | HTTP client for API integration |
-| React Router | Client-side navigation |
 | JavaScript (ES6+) | Application logic |
 | HTML5 / CSS3 | Markup and responsive styling |
 
@@ -45,19 +59,32 @@ This project demonstrates end-to-end full-stack development including REST API d
 ```
 chronic-disease-management/
 │
-├── ChronicDiseaseApp1/          # ASP.NET Core Web API (Backend)
-│   ├── Controllers/             # API endpoint controllers
-│   ├── Models/                  # Data models
-│   ├── Data/                    # EF Core DbContext
-│   └── Program.cs               # App entry point and middleware config
+├── Backend/                     # ASP.NET Core Web API
+│   ├── Controllers/
+│   │   ├── PatientsController.cs
+│   │   └── VitalsController.cs
+│   ├── Models/
+│   │   ├── Patient.cs
+│   │   └── Vital.cs
+│   ├── Data/
+│   │   └── ChronicDbContext.cs
+│   ├── Program.cs
+│   ├── appsettings.json
+│   └── Backend.csproj
 │
 ├── src/                         # React Frontend
-│   ├── components/              # Reusable UI components
-│   ├── pages/                   # Page-level components
-│   ├── services/                # Axios API service layer
-│   └── App.js                   # Root component and routing
+│   ├── components/
+│   │   ├── ConfirmationDialog.js
+│   │   └── Notification.js
+│   ├── pages/
+│   │   ├── Patients.js
+│   │   └── AddOrEditPatient.js
+│   ├── services/
+│   │   └── api.js
+│   └── App.js
 │
-├── public/                      # Static assets
+├── screenshots/
+├── public/
 └── README.md
 ```
 
@@ -65,6 +92,7 @@ chronic-disease-management/
 
 ## API Endpoints
 
+### Patients
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/api/patients` | Retrieve all patient records |
@@ -72,6 +100,24 @@ chronic-disease-management/
 | POST | `/api/patients` | Create a new patient record |
 | PUT | `/api/patients/{id}` | Update an existing patient |
 | DELETE | `/api/patients/{id}` | Delete a patient record |
+
+### Vitals
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/vitals?patientId={id}` | Get vitals for a specific patient |
+| POST | `/api/vitals` | Record new vitals |
+| PUT | `/api/vitals/{id}` | Update vitals |
+| DELETE | `/api/vitals/{id}` | Delete vitals |
+
+---
+
+## Risk Assessment Logic
+
+| Condition | Risk Level |
+|-----------|------------|
+| BP Systolic > 140 OR multiple abnormal readings | 🔴 High Risk |
+| BP Systolic > 120 OR one abnormal reading | 🟡 Medium Risk |
+| All readings within normal range | 🟢 Low Risk |
 
 ---
 
@@ -90,11 +136,12 @@ cd chronic-disease-management
 
 ### 2. Run the Backend
 ```bash
-cd ChronicDiseaseApp1
+cd Backend
 dotnet restore
-dotnet run
+ASPNETCORE_ENVIRONMENT=Development dotnet run
 ```
-Backend API runs on: **http://localhost:5000**
+Backend API runs on: **http://localhost:5000**  
+Swagger UI: **http://localhost:5000/swagger**
 
 ### 3. Run the Frontend
 ```bash
@@ -109,10 +156,10 @@ Frontend runs on: **http://localhost:3000**
 ## Key Implementation Details
 
 - **REST API design** — Clean separation of concerns with Controllers, Models, and Data layers
-- **Entity Framework Core** — Code-first database approach with migrations for schema management
+- **Entity Framework Core** — Code-first database with automatic schema creation on startup
 - **Frontend–backend integration** — Axios service layer abstracts all API calls from UI components
 - **Form validation** — Client-side validation for Australian phone formats, email, and date fields
-- **Responsive design** — Mobile-friendly layout with CSS-based responsive components
+- **Risk engine** — Vitals-based risk scoring logic built into the frontend
 
 ---
 
@@ -129,7 +176,7 @@ Frontend runs on: **http://localhost:3000**
 
 ## About the Developer
 
-**Karumudi Karthika** — Full Stack Developer with 3 years of enterprise experience building fintech platforms at Fiserv.
+**Karumudi Karthika** — Full Stack Developer with experience building full-stack applications.
 
 - 🔗 [LinkedIn](https://linkedin.com/in/karumudi-karthika)
 - 💻 [GitHub](https://github.com/Karumudi-Karthika)
